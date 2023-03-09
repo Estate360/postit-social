@@ -1,7 +1,7 @@
 import { Response, Request, NextFunction } from "express";
 
 interface CustomError extends Error {
-  status: any;
+  status: string;
   message: string;
   statusCode: number;
   isOperational: boolean;
@@ -28,15 +28,15 @@ const sendProdError = (err: CustomError, req: Request, res: Response) => {
         status: err.status,
         message: err.message,
       });
+    } else {
+      //i) Log error
+      console.error("ERROR!!!", err);
+      //ii) Send generic message
+      return res.status(err.statusCode).json({
+        status: "error",
+        message: "Something went wrong!",
+      });
     }
-
-    //i) Log error
-    console.error("ERROR💥", err);
-    //ii) Send generic message
-    return res.status(err.statusCode).json({
-      status: "error",
-      message: "Something went wrong!",
-    });
   }
 };
 
@@ -53,7 +53,7 @@ const globalErrorHandler = (
 
   if (process.env.NODE_ENV === "development") {
     sendDevError(err, req, res);
-  } else if(process.env.NODE_ENV === "production") {
+  } else if (process.env.NODE_ENV === "production") {
     sendProdError(err, req, res);
   }
 };

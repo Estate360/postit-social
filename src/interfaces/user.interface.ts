@@ -8,10 +8,11 @@ interface IUserDoc extends Document {
   role: "user" | "guide" | "lead-guide" | "admin";
   password: string;
   passwordConfirm?: string;
-  passwordResetAt?: Date| number;
+  passwordResetAt?: Date| number| string;
   passwordResetToken: string;
   passwordResetExpires: Date;
   active: boolean;
+  length: number;
 
   correctPassword(
     candidatePassword: string,

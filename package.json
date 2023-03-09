@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc -p ./tsconfig.json",
     "start": "node build",
-    "dev": "nodemon src/sever.ts",
+    "dev": "nodemon src/server.ts",
     "prod": "NODE_ENV=production nodemon src/server.ts",
     "start:prod": "ts-node-dev --respawn --transpile-only src/server.ts"
   },
@@ -16,6 +16,7 @@
   "dependencies": {
     "": "",
     "@types/morgan": "^1.9.4",
+    "@types/validator": "^13.7.13",
     "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
@@ -25,6 +26,7 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.1",
     "morgan": "^1.10.0",
+    "validator": "^13.9.0",
     "xss": "^1.0.14",
     "xss-clean": "^0.1.1"
   },
