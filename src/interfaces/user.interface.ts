@@ -9,12 +9,13 @@ interface IUserDoc extends Document {
   password: string;
   passwordConfirm?: string;
   passwordResetAt?: Date| number| string;
-  passwordResetToken: string;
-  passwordResetExpires: Date;
+  passwordResetToken?: string;
+  passwordResetExpires?: Date;
   active: boolean;
   length: number;
+  slug: string;
 
-  correctPassword(
+  comparePassword(
     candidatePassword: string,
     userPassword: string
   ): Promise<boolean>;

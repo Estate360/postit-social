@@ -1,6 +1,8 @@
 import crypto from "crypto";
 import bcrypt from "bcrypt";
+import slugify from "slugify";
 import mongoose from "mongoose";
+import { generateRandomAvatar } from "../utils/randomAvater";
 import { IUserDoc, IUserModel } from "../interfaces/user.interface";
 
 const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
@@ -42,6 +44,7 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
       default: true,
       select: false,
     },
+    slug: { type: String },
   },
   {
     toJSON: { virtuals: true },
@@ -60,6 +63,21 @@ userSchema.pre<IUserDoc>("save", async function (next) {
 
   //Delete the passwordConfirm field
   this.passwordConfirm = undefined;
+
+  try {
+    const avatarUrl = await generateRandomAvatar(this.email);
+    this.photo = avatarUrl;
+  } catch (err) {
+    console.error(err);
+  }
+
+  next();
+});
+
+userSchema.pre<IUserDoc>("save", function (next) {
+  // console.log(this);
+  this.slug = slugify(this.name, "_");
+  next();
 });
 
 userSchema.pre<IUserDoc>("save", async function (next) {
@@ -76,7 +94,7 @@ userSchema.pre<IUserDoc>("find", function (next) {
 });
 
 //THESE SCHEMA'S ARE INSTANCE METHODS, THEY'RE AVAILABLE AT ANY OF THE USER MODULE/DOCUMENT.
-userSchema.methods.correctPassword = async function (
+userSchema.methods.comparePassword = async function (
   candidatePassword: string,
   userPassword: string
 ) {

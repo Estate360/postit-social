@@ -4,6 +4,18 @@ import APIQueryFeatures from "../utils/apiQueryFeatures";
 import AppErrorHandler from "../utils/app.errors";
 import { catchAsync } from "../utils/catchAsync";
 
+interface CustomRequest extends Request {
+  user?: any;
+}
+//Here we created a function "filterObj".
+const filterObj = (obj: { [x: string]: any }, ...allowedFields: string[]) => {
+  const newObj: any = {};
+  Object.keys(obj).forEach((el: any) => {
+    if (allowedFields.includes(el)) newObj[el] = obj[el];
+  });
+  return newObj;
+};
+
 export const createUser = (req: Request, res: Response) => {
   res.status(500).json({
     status: "error!",
@@ -46,14 +58,17 @@ export const getAllUsers = catchAsync(
     // const user = query
     //   ? await User.find().sort({ _id: -1 }).limit(3)
     //   : await User.find();
- 
-     //EXECUTE QUERY
-     const features = new APIQueryFeatures(User.find(), req.query as Record<string, string>)
-       .filter()
-       .sort()
-       .limitField()
-       .paginate();
-     const user = await features.query;
+
+    //EXECUTE QUERY
+    const features = new APIQueryFeatures(
+      User.find(),
+      req.query as Record<string, string>
+    )
+      .filter()
+      .sort()
+      .limitField()
+      .paginate();
+    const user = await features.query;
 
     res.status(200).json({
       status: "success",
@@ -99,17 +114,13 @@ export const updateUser = catchAsync(
 export const deleteUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) {
-      const appError = new AppErrorHandler(
-        `No user found with the ID: ${req.params.id}. Not deleted!`,
-        404
+    if (!user)
+      return next(
+        new AppErrorHandler(
+          `No user found with the ID: ${req.params.id}. Not deleted!`,
+          404
+        )
       );
-      res.status(appError.statusCode).json({
-        status: appError.status,
-        message: appError.message,
-      });
-      return;
-    }
 
     res.status(200).json({
       message: `user with the ID: ${user} deleted`,
@@ -119,9 +130,6 @@ export const deleteUser = catchAsync(
   }
 );
 
-interface CustomRequest extends Request {
-  user?: any;
-}
 
 export const deleteMyAccount = async (
   req: CustomRequest,
@@ -135,4 +143,47 @@ export const deleteMyAccount = async (
     data: null,
   });
 };
+
+export const getMe = (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  req.params.id = req.user.id;
+  next();
+};
+
+export const updateMyData = catchAsync(
+  async (req: CustomRequest, res: Response, next: NextFunction) => {
+    // 1) Create error if user POSTs password data
+    if (req.body.password || req.body.passwordConfirm) {
+      return next(
+        new AppErrorHandler(
+          "This route is not for password update. Please use /updateMyPassword",
+          400
+        )
+      );
+    }
+
+    // 2) Filtered out unwanted fields that are not allowed to be updated, by creating a function "filterObj"
+    const filteredBody = filterObj(req.body, "name", "email");
+
+    // 3) Update user document
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      filteredBody,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    res.status(200).json({
+      status: "successful",
+      data: {
+        user: updatedUser,
+      },
+    });
+  }
+);
 
