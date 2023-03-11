@@ -5,6 +5,8 @@ interface IUserDoc extends Document {
   name: string;
   email: string;
   photo: string;
+  username:string;
+  posts:string;
   role: "user" | "guide" | "lead-guide" | "admin";
   password: string;
   passwordConfirm?: string;

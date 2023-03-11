@@ -61,7 +61,7 @@ export const getAllUsers = catchAsync(
 
     //EXECUTE QUERY
     const features = new APIQueryFeatures(
-      User.find(),
+      await User.find(),
       req.query as Record<string, string>
     )
       .filter()
@@ -117,7 +117,7 @@ export const deleteUser = catchAsync(
     if (!user)
       return next(
         new AppErrorHandler(
-          `No user found with the ID: ${req.params.id}. Not deleted!`,
+          `No user found with the ID: ${req.params.id}. User Not Deleted!`,
           404
         )
       );
@@ -130,7 +130,6 @@ export const deleteUser = catchAsync(
   }
 );
 
-
 export const deleteMyAccount = async (
   req: CustomRequest,
   res: Response,
@@ -139,19 +138,22 @@ export const deleteMyAccount = async (
   await User.findOneAndUpdate(req.user.id, { active: false });
 
   res.status(204).json({
-    status: "successful",
+    status: "success",
     data: null,
   });
 };
 
-export const getMe = (
-  req: CustomRequest,
-  res: Response,
-  next: NextFunction
-) => {
-  req.params.id = req.user.id;
-  next();
-};
+export const getMe = catchAsync(
+  async (req: CustomRequest, res: Response, next: NextFunction) => {
+    // req.params.id = req.user.id;
+    const me = await User.findById(req.user.id);
+    if (!me) return next(new AppErrorHandler("Error Retrieving Profile!", 400));
+    res.status(200).json({
+      status: "success",
+      myProfile: me,
+    });
+  }
+);
 
 export const updateMyData = catchAsync(
   async (req: CustomRequest, res: Response, next: NextFunction) => {
@@ -186,4 +188,3 @@ export const updateMyData = catchAsync(
     });
   }
 );
-

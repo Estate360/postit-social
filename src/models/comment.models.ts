@@ -1,13 +1,48 @@
-// import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
+import { IComment } from "../interfaces/comment.interface";
 
-// const commentSchema = new mongoose.Schema<Comment>(
-//   {
-//     author: { type: Schema.Types.ObjectId, ref: "User" },
-//     postitId: { type: Schema.Types.ObjectId, ref: "Postit" },
-//     content: { type: String, required: true },
-//     deleted: { type: Boolean, default: false },
-//   },
-//   { timestamps: true }
-// );
+const commentSchema = new Schema<IComment>(
+  {
+    postitId: {
+      type: Schema.Types.ObjectId,
+      ref: "Post",
+      index: true,
+    },
+    comments: [
+      {
+        author: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+          index: true,
+        },
+        authorName: String,
+        authorUserName: String,
+        comment: { type: String },
+        time: { type: Date, default: new Date() },
+        sorter: { type: Number },
+        subComments: [
+          {
+            author: {
+              type: Schema.Types.ObjectId,
+              ref: "User",
+              index: true,
+            },
+            authorName: String,
+            authorUserName: String,
+            comment: { type: String },
+            time: { type: Date, default: new Date() },
+            sorter: { type: Number },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    timestamps: {
+      createdAt: "created_at",
+      updatedAt: "updated_at",
+    },
+  }
+);
 
-// export const PostitModel = mongoose.model<IPostit>("Postit", postitSchema);
+export const commentModel = mongoose.model<IComment>("Comment", commentSchema);

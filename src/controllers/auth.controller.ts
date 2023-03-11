@@ -1,6 +1,6 @@
 import * as crypto from "crypto";
 import bcrypt from "bcrypt";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { catchAsync } from "../utils/catchAsync";
 import User from "../models/user.models";
 import { IUserDoc } from "../interfaces/user.interface";
@@ -18,17 +18,19 @@ export const signup = catchAsync(
     // console.log(req.body);
 
     // Check if user already exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.exists({ email });
     if (existingUser)
       return next(new AppErrorHandler("User already exists!", 409));
 
     // Create new user
     const newUser = await User.create({
       name: req.body.name,
+      username: req.body.username,
       email: req.body.email,
       password: req.body.password,
       passwordConfirm: req.body.passwordConfirm,
       role: req.body.role,
+      posts: req.body.posts,
     });
     newUser.passwordConfirm = undefined;
 
@@ -36,7 +38,7 @@ export const signup = catchAsync(
     const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET!, {
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
-    console.log(token);
+    // console.log(token);
 
     res.status(201).json({
       message: "User signed up successfully.",
@@ -109,11 +111,11 @@ export const forgotPassword = catchAsync(
         "host"
       )}/api/v1/users/resetPassword/${resetToken}`;
 
-      const message = `Forgot your password? use this link ${resetURL} and submit your password and confirmPassword`;
+      const message = `Forgot your password? use this link ${resetURL} and submit your new password and passwordConfirm`;
 
       await sendEmail({
         email: user.email,
-        subject: "Your password reset token (valid for 10mins)",
+        subject: "Your password reset token, (valid for 10mins)",
         message,
       });
 

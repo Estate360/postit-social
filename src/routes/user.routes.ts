@@ -27,6 +27,7 @@ const router: Router = Router();
 
 router.post("/signup", userSignupValidator, signup);
 router.post("/login", userLoginValidator, login);
+router.post("/:userId/posts", userLoginValidator, login);
 
 router.post("/forgotPassword", forgotPassword);
 router.patch("/resetPassword/:token", resetPassword);

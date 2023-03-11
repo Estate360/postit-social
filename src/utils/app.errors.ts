@@ -1,7 +1,11 @@
 class AppErrorHandler extends Error {
+  isOperational: boolean;
   statusCode: number;
   status: string;
-  isOperational: boolean;
+  _message: any;
+  kind: any;
+  path: any;
+  value:any;
   constructor(message: string, statusCode: number) {
     super(message);
 

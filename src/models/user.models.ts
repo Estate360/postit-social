@@ -11,6 +11,10 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
       type: String,
       required: [true, "Please input your name"],
     },
+    username: {
+      type: String,
+      required: true,
+    },
     email: {
       type: String,
       required: [true, "Please input your email"],
@@ -36,6 +40,12 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
       type: String,
       required: [true, "Please confirm your password "],
     },
+    posts: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Postit",
+      },
+    ],
     passwordResetAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
@@ -47,6 +57,10 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
     slug: { type: String },
   },
   {
+    timestamps: {
+      createdAt: "created_at",
+      updatedAt: "updated_at",
+    },
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   }
@@ -70,6 +84,15 @@ userSchema.pre<IUserDoc>("save", async function (next) {
   } catch (err) {
     console.error(err);
   }
+
+  next();
+});
+
+userSchema.pre<IUserDoc>(/^find/, function (next) {
+  this.populate({
+    path: "posts",
+    select: "-__v -created_at -updated_at",
+  });
 
   next();
 });

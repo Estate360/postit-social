@@ -15,6 +15,11 @@ export const userSignupValidator = (
       .required()
       .lowercase(),
     // .trim(),
+    username: Joi.string()
+      .min(3)
+      .message("Username must not be less than 3 characters")
+      .required(),
+      posts: Joi.array().items(Joi.string()),
     email: Joi.string().email().required().lowercase(),
     password: Joi.string()
       .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
