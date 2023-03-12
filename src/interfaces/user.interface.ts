@@ -5,15 +5,19 @@ interface IUserDoc extends Document {
   name: string;
   email: string;
   photo: string;
+  username:string;
+  posts:string;
   role: "user" | "guide" | "lead-guide" | "admin";
   password: string;
   passwordConfirm?: string;
-  passwordResetAt?: Date| number;
-  passwordResetToken: string;
-  passwordResetExpires: Date;
+  passwordResetAt?: Date| number| string;
+  passwordResetToken?: string;
+  passwordResetExpires?: Date;
   active: boolean;
+  length: number;
+  slug: string;
 
-  correctPassword(
+  comparePassword(
     candidatePassword: string,
     userPassword: string
   ): Promise<boolean>;

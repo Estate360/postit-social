@@ -1,14 +1,19 @@
 import crypto from "crypto";
 import bcrypt from "bcrypt";
+import slugify from "slugify";
 import mongoose from "mongoose";
-import  { IUserDoc,IUserModel } from "../interfaces/user.interface";
-
+import { generateRandomAvatar } from "../utils/randomAvater";
+import { IUserDoc, IUserModel } from "../interfaces/user.interface";
 
 const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
   {
     name: {
       type: String,
       required: [true, "Please input your name"],
+    },
+    username: {
+      type: String,
+      required: true,
     },
     email: {
       type: String,
@@ -22,20 +27,25 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
     },
     role: {
       type: String,
-      enum: ["user", "guide", "lead-guide", "admin"],
+      enum: ["user", "admin"],
       default: "user",
     },
     password: {
       type: String,
       required: [true, "Please input your password"],
       minlength: 8,
-      //with this select set to "false", the password will not be visible when required
       select: false,
     },
     passwordConfirm: {
       type: String,
       required: [true, "Please confirm your password "],
     },
+    posts: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Postit",
+      },
+    ],
     passwordResetAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
@@ -44,8 +54,13 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
       default: true,
       select: false,
     },
+    slug: { type: String },
   },
   {
+    timestamps: {
+      createdAt: "created_at",
+      updatedAt: "updated_at",
+    },
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   }
@@ -62,6 +77,30 @@ userSchema.pre<IUserDoc>("save", async function (next) {
 
   //Delete the passwordConfirm field
   this.passwordConfirm = undefined;
+
+  try {
+    const avatarUrl = await generateRandomAvatar(this.email);
+    this.photo = avatarUrl;
+  } catch (err) {
+    console.error(err);
+  }
+
+  next();
+});
+
+userSchema.pre<IUserDoc>(/^find/, function (next) {
+  this.populate({
+    path: "posts",
+    select: "-__v -created_at -updated_at",
+  });
+
+  next();
+});
+
+userSchema.pre<IUserDoc>("save", function (next) {
+  // console.log(this);
+  this.slug = slugify(this.name, "_");
+  next();
 });
 
 userSchema.pre<IUserDoc>("save", async function (next) {
@@ -78,9 +117,49 @@ userSchema.pre<IUserDoc>("find", function (next) {
 });
 
 //THESE SCHEMA'S ARE INSTANCE METHODS, THEY'RE AVAILABLE AT ANY OF THE USER MODULE/DOCUMENT.
-userSchema.methods.correctPassword = async function (
+userSchema.methods.comparePassword = async function (
   candidatePassword: string,
   userPassword: string
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
 };
+
+userSchema.methods.changedPasswordAfter = function (
+  JWTTimeStamp: number
+): boolean {
+  if (this.passwordResetAt) {
+    console.log(this.passwordResetAt, JWTTimeStamp);
+  }
+  if (this.passwordResetAt) {
+    const changedTimeStamp = parseInt(
+      (this.passwordResetAt.getTime() / 1000).toString(),
+      10
+    );
+    console.log(changedTimeStamp, JWTTimeStamp);
+    return JWTTimeStamp < changedTimeStamp;
+  }
+
+  //False means not changed
+  return false;
+};
+
+userSchema.methods.correctPasswordResetToken = function (
+  this: IUserDoc
+): string {
+  const resetToken = crypto.randomBytes(30).toString("hex");
+
+  this.passwordResetToken = crypto //This is the encrypted version of the token that will be stored in the DB.
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  console.log({ resetToken }, this.passwordResetToken);
+
+  this.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000); //this is the time when the passwordResetToken stored in the DB will expire. This one is  not sent to the user
+
+  return resetToken;
+};
+
+const User = mongoose.model("User", userSchema);
+
+export default User;
