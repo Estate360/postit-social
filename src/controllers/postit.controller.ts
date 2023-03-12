@@ -1,5 +1,4 @@
 import { Postit } from "../models/postit.models";
-import User from "../models/user.models";
 import AppErrorHandler from "../utils/app.errors";
 import { catchAsync } from "../utils/catchAsync";
 import { NextFunction, Request, Response } from "express";
@@ -46,7 +45,7 @@ postController.createPost = catchAsync(
   }
 );
 
-postController.getAll = catchAsync(
+postController.getAllPost = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { sortBy, filter } = req.query;
 
@@ -67,6 +66,26 @@ postController.getAll = catchAsync(
       result: sortedPosts.length,
       sortedPosts,
     } as SortedPosts);
+  }
+);
+
+postController.updatePost = catchAsync(
+  async (req: CustomRequest, res: Response, next: NextFunction) => {
+    const post = await Postit.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!post)
+      new AppErrorHandler(`User with ID: ${req.params.id} not found!`, 404);
+
+      res.status(200).json({
+        message: "Post updated successfully",
+        status: "success",
+        data: {
+          post,
+        },
+      });
   }
 );
 
