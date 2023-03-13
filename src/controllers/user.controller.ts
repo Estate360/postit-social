@@ -88,22 +88,12 @@ export const updateUser = catchAsync(
       runValidators: true,
     });
 
-    if (!user) {
-      const appError = new AppErrorHandler(
-        `User with ID: ${req.params.id} not found!`,
-        404
-      );
-      res.status(appError.statusCode).json({
-        status: appError.status,
-        message: appError.message,
-      });
-      return;
-    }
+    if (!user)
+      new AppErrorHandler(`User with ID: ${req.params.id} not found!`, 404);
 
     res.status(200).json({
       message: "user updated successfully",
       status: "success",
-      result: user.length,
       data: {
         user,
       },

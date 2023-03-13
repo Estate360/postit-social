@@ -30,7 +30,6 @@ export const signup = catchAsync(
       password: req.body.password,
       passwordConfirm: req.body.passwordConfirm,
       role: req.body.role,
-      posts: req.body.posts,
     });
     newUser.passwordConfirm = undefined;
 
@@ -70,7 +69,11 @@ export const login = catchAsync(
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
 
-    res.json({ token });
+    res.status(200).json({
+      status: "success",
+      token,
+      data: user,
+    });
   }
 );
 

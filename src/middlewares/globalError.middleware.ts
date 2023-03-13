@@ -23,16 +23,9 @@ const handleCastErrorDB = (err: any) => {
 //   const message = `Invalid input data. ${errors.join(". ")}`;
 //   return new AppErrorHandler(message, 400);
 // };
+
 const handleValidationError = (err: any) => {
-  // const errors: string[] = [];
-
-  // for (let key in err.errors) {
-  //   if (err.errors.hasOwnProperty(key)) {
-  //     errors.push(err.errors[key].message);
-  //   }
-  // }
-
-  const message = `Invalid input data. Input can not be empty!!}`;
+  const message = `Invalid postTag. Select either: "nigeria", "politics", "football", "bug" or "technology".`;
   return new AppErrorHandler(message, 400);
 };
 
