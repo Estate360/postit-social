@@ -56,7 +56,10 @@ app.get("/", (req, res) => {
   });
 });
 app.get("/estate-api-doc", (req, res) => {
-  res.status(200).json("DOC ON IT'S WAY ☄️... API IS HEALTHY!");
+  res.status(200).json({
+    status: "DOC ON IT'S WAY ☄️... API IS HEALTHY!",
+    api_doc_link: "https://estate-postit-socials.onrender.com/",
+  });
 });
 
 //Wrong route error handler middleware
