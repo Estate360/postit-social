@@ -12,7 +12,7 @@ const postitSchema = new mongoose.Schema<IPostit>(
       type: String,
       required: true,
     },
-    feedback: {
+    postit: {
       type: String,
       required: true,
     },

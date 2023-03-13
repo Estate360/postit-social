@@ -2,17 +2,17 @@ import { string } from "joi";
 import { Document } from "mongoose";
 
 export interface IPostit extends Document {
-  author: string| any;
+  author: string | any;
   authorName: string;
-  authorUsername:string;
+  authorUsername: string;
   comments: string;
   title: string;
-  allComments: string| {};
+  allComments: string | {};
   postTag: string;
   upvotes: number;
-  upvoters: string[]
+  upvoters: string[];
   isDeleted: boolean;
-  feedback: string;
+  postit: string;
   createdAt: Date;
   updatedAt: Date;
 }
