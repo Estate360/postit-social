@@ -124,7 +124,7 @@ export const forgotPassword = catchAsync(
 
       res.status(200).json({
         status: "success",
-        message: "Token sent to email!",
+        message: "Password reset token sent to email!",
       });
     } catch (err) {
       user.passwordResetToken = undefined;
@@ -187,12 +187,15 @@ export const updatePassword = catchAsync(
       !(await user.comparePassword(req.body.passwordCurrent, user.password))
     ) {
       return next(
-        new AppErrorHandler("Your username or password id incorrect!", 401)
+        new AppErrorHandler("Your current password is incorrect!", 401)
       );
     }
     //3) If so, update password
     user.password = req.body.password;
     user.passwordConfirm = req.body.passwordConfirm;
+    if (user.password !== req.body.passwordConfirm) {
+      return next(new AppErrorHandler("Passwords do not match!", 401));
+    }
     await user.save();
 
     //4) Log user in, send JWT(now logged in with new password)
