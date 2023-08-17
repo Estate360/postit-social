@@ -8,7 +8,7 @@ Postit is a social media app that lets users create and share posts containing t
 
 ### Entity Relationship Diagram Link: [PostiT_Model](https://dbdiagram.io/d/640eb47b296d97641d8760f4)
 
-### API Documentation Link: [PostiT_API_Doc](https://estate-postit-socials.onrender.com/estate-api-doc) or this link click on [PostiT_API_Doc](https://documenter.getpostman.com/view/22391163/2s93Jut37y) to access it faster.
+### API Documentation Link: [PostiT_API_Doc](https://estate-postit-socials.onrender.com/postit-api-doc) or this link click on [PostiT_API_Doc](https://documenter.getpostman.com/view/22391163/2s93Jut37y) to access it faster.
 
 ### PostiT Socials API (TypeScript)
 
