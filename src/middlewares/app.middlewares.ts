@@ -55,7 +55,7 @@ app.get("/", (req, res) => {
     Hope: "Relax your nerves, Backend is Tech, Tech is Hope and Hope is Life...",
   });
 });
-app.get("/postit-api-doc", (req, res) => {
+app.get("/postitAPIdoc", (req, res) => {
   res.redirect("https://documenter.getpostman.com/view/22391163/2s93Jut37y");
 });
 
