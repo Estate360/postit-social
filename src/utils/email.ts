@@ -66,7 +66,7 @@ export default class Email {
     this.username = user.username;
     this.url = url;
     this.from = `Nweke Estate <${
-      process.env.NODE_ENV === "production"
+      process.env.NODE_ENV === "development"
         ? process.env.EMAIL_FROM
         : process.env.SENDINBLUE_EMAIL_FROM
     }>`;
@@ -132,14 +132,14 @@ export default class Email {
 
   public async sendWelcomeMail(): Promise<void> {
     await this.send(
-      "Welcome",
+      "welcome",
       "Welcome to the PostiT! Everything is social!"
     );
   }
 
   public async sendPasswordReset_ForgetLink(): Promise<void> {
     await this.send(
-      "Forgot Email",
+      "forgetEmail",
       "Your password reset token. (Valid for only 10 minutes)"
     );
   }
