@@ -1,0 +1,29 @@
+extends baseEmail
+
+block content
+  p Hi #{username},
+
+  p Welcome to our PostiT! We're excited to have you on board 🎉🙏.
+
+  p Thank you for joining our community. In PostiT, you get to connect with friends and families, stay organized and have fun.
+
+  p To get started, simply click the button below to login and get your you dashboard:
+
+  table.btn.btn-primary(role='presentation', border='0', cellpadding='0', cellspacing='0')
+    tbody
+      tr
+        td(align='left')
+          table(role='presentation', border='0', cellpadding='0', cellspacing='0')
+            tbody
+              tr
+                td
+                  a(href=`${url}`, target='_blank') Connect Wallet
+
+  p Feel free to reach out to our support team for any question!
+
+  p - PostiT Team | nwekeestate.node@gmail.com
+
+  p Once again, welcome aboard and enjoy your experience with us!
+
+  p Best regards,
+  p The PostiT Team
