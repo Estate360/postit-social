@@ -132,14 +132,14 @@ export default class Email {
 
   public async sendWelcomeMail(): Promise<void> {
     await this.send(
-      "Welcome",
+      "welcome",
       "Welcome to the PostiT! Everything is social!"
     );
   }
 
   public async sendPasswordReset_ForgetLink(): Promise<void> {
     await this.send(
-      "Forgot Email",
+      "forgetEmail",
       "Your password reset token. (Valid for only 10 minutes)"
     );
   }
