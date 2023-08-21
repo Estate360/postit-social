@@ -1,4 +1,3 @@
-import { string } from "joi";
 import { Document } from "mongoose";
 
 export interface IPostit extends Document {

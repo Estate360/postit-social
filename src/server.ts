@@ -9,7 +9,7 @@ process.on("uncaughtException", (err) => {
   process.exit(1);
 });
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 4000;
 
 //Database Connection
 const DB = `${process.env.DATABASE}`;

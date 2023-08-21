@@ -5,7 +5,7 @@ import { catchAsync } from "../utils/catchAsync";
 import User from "../models/user.models";
 import { IUserDoc } from "../interfaces/user.interface";
 import AppErrorHandler from "../utils/app.errors";
-import { sendEmail } from "../utils/email";
+import Email from "../utils/email";
 import { Request, Response, NextFunction } from "express";
 
 interface CustomRequest extends Request {
@@ -37,7 +37,11 @@ export const signup = catchAsync(
     const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET!, {
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
-    // console.log(token);
+
+    const port = process.env.PORT || 4000;
+    const url = `http://localhost:${port}/api/v1/login`;
+    console.log(url);
+    await new Email(newUser, url).sendWelcomeMail();
 
     res.status(201).json({
       message: "User signed up successfully.",
@@ -114,13 +118,7 @@ export const forgotPassword = catchAsync(
         "host"
       )}/api/v1/users/resetPassword/${resetToken}`;
 
-      const message = `Forgot your password? use this link ${resetURL} and submit your new password and passwordConfirm`;
-
-      await sendEmail({
-        email: user.email,
-        subject: "Your password reset token, (valid for 10mins)",
-        message,
-      });
+      await new Email(user, resetURL).sendPasswordReset_ForgetLink();
 
       res.status(200).json({
         status: "success",

@@ -33,7 +33,7 @@ To use this API, you will need to have Node.js and MongoDB installed on your com
    npm start
 
 5. Run `npm run dev or npm run prod` to start the server locally in dev or production environment.
-   The server will start running at http://localhost:8000 or http://localhost:5000. You can now use this API to perform various actions.
+   The server will start running at http://localhost:4000. You can now use this API to perform various actions.
 
 ## Hosted Link:
 
