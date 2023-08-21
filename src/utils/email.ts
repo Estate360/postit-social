@@ -66,7 +66,7 @@ export default class Email {
     this.username = user.username;
     this.url = url;
     this.from = `Nweke Estate <${
-      process.env.NODE_ENV === "development"
+      process.env.NODE_ENV === "production"
         ? process.env.EMAIL_FROM
         : process.env.SENDINBLUE_EMAIL_FROM
     }>`;
