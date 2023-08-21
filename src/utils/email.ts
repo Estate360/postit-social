@@ -72,11 +72,6 @@ export default class Email {
     }>`;
   }
 
-  // private async accessToken(): Promise<string> {
-  //   const accessToken = await oAuth2Client.getAccessToken();
-  //   return accessToken.token;
-  // }
-
   private async accessToken(): Promise<string> {
     const accessTokenObject = await oAuth2Client.getAccessToken();
 
@@ -122,19 +117,12 @@ export default class Email {
       text: htmlToText(html),
     };
 
-    // await this.newTransport()?.sendMail(mailOptions, (error, info) => {
-    //   if (error) {
-    //     console.log(error.stack);
-    //   } else {
-    //     console.log(`Email sent successfully: ${info.response}`);
-    //   }
-    // });
-
     const transporter = await this.newTransport();
     if (transporter) {
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
           console.log(error.stack);
+          throw new Error("Error sending mail", error);
         } else {
           console.log(`Email sent successfully: ${info.response}`);
         }
